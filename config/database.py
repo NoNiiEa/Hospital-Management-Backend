@@ -15,5 +15,5 @@ if not uri:
 
 # Connect to MongoDB
 client = MongoClient(uri)
-db = client.todo_db
-collection_name = db["todo_collection"]
+db = client.hosbitalDB
+patients = db["patients"]
