@@ -1,12 +1,13 @@
-from fastapi import APIRouter, HTTPException
-
-from models.todos import TodoModel
-from models.patients import PatientModel
+from fastapi import APIRouter
 from config.database import patients as patients_collection
 from schema.patients_schemas import list_patient_schema
-from bson import ObjectId
+from .patients import patient_router
+from .doctors import doctor_router
 
 router = APIRouter()
+
+router.include_router(patient_router, prefix="/patients", tags=["patients"])
+router.include_router(doctor_router, prefix="/doctors", tags=["doctors"])
 
 # @router.get("/todos")
 # async def get_todos():
@@ -25,13 +26,4 @@ router = APIRouter()
 #         return individual_schema(todo)
 #     raise HTTPException(status_code=404, detail="Todo not found")
 
-@router.get("/patients")
-async def get_patients():
-    patients = patients_collection.find()
-    return list_patient_schema(patients)
-
-@router.post("/patients")
-async def create_patients(patient: PatientModel):
-    response = patients_collection.insert_one(patient.model_dump())
-    return {"id": str(response.inserted_id)}
 

@@ -17,3 +17,4 @@ if not uri:
 client = MongoClient(uri)
 db = client.hosbitalDB
 patients = db["patients"]
+doctors = db["doctors"]
