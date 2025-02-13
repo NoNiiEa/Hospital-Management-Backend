@@ -19,3 +19,4 @@ db = client.hosbitalDB
 patients = db["patients"]
 doctors = db["doctors"]
 appointments = db["appointments"]
+prescriptions = db["prescriptions"]
