@@ -1,8 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from models.appointment import AppointmentModel
 from config.database import appointments as appointment_collection, patients as patient_collection
 from schema.appointment import list_schema
 from bson import ObjectId
+from starlette import status
 
 appointment_router = APIRouter()
 
@@ -27,4 +28,34 @@ async def create_appointments(appointment: AppointmentModel):
             {"$set": {'appointments': old_appointments}}
         )
     return {"id": str(response.inserted_id)}
+
+@appointment_router.delete("/{appointment_id}")
+async def delete_appointment(appointment_id: str):
+    try:
+        appointment = appointment_collection.find_one({"_id": ObjectId(appointment_id)})
+        if not appointment:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+        patient_id = appointment["patient_id"]
+
+        result = appointment_collection.delete_one({"_id": ObjectId(appointment_id)})
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Failed to delete appointment")
+
+        patient = patient_collection.find_one({"_id": ObjectId(patient_id)})
+        if patient and "appointments" in patient:
+            list_appointment = patient["appointments"]
+            if str(appointment_id) in list_appointment:
+                list_appointment.remove(str(appointment_id))
+
+            patient_collection.update_one(
+                {"_id": ObjectId(patient_id)},
+                {"$set": {"appointments": list_appointment}}
+            )
+
+        return {"result": "Appointment has been successfully deleted"}
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
 
