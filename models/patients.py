@@ -17,5 +17,5 @@ class PatientModel(BaseModel):
     gender: str
     contact: ContactModel
     medical_history: List[MedicalHistoryModel]
-    appointments: List[str] = []
-    prescriptions: List[str] = []
+    appointments: List[str]
+    prescriptions: List[str]
