@@ -20,12 +20,12 @@ async def create_prescriptions(prescription: PrescriptionModel):
     patient = patient_collection.find_one({"_id": ObjectId(patient_id)})
 
     if patient:
-        old_prescriptions = patient.get("prescriptions", [])  # Safe access
-        old_prescriptions.append(str(response.inserted_id))  # Fix method call
+        old_prescriptions = patient.get("prescriptions", [])
+        old_prescriptions.append(str(response.inserted_id))
 
-        patient_collection.update_one(  # Fix collection update
+        patient_collection.update_one(
             {"_id": ObjectId(patient_id)},
             {"$set": {"prescriptions": old_prescriptions}}
         )
 
-    return {"id": str(response.inserted_id)}  # Fix method call
+    return {"id": str(response.inserted_id)}
