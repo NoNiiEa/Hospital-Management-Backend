@@ -11,12 +11,12 @@ async def get_patients():
     patients = patients_collection.find()
     return list_patient_schema(patients)
 
-@patient_router.post("/")
+@patient_router.post("/create/")
 async def create_patients(patient: PatientModel):
     response = patients_collection.insert_one(patient.model_dump())
     return {"id": str(response.inserted_id)}
 
-@patient_router.delete("/{patient_id}")
+@patient_router.delete("/delete/{patient_id}")
 async def delete_patient(patient_id: str):
     result = patients_collection.delete_one({"_id": ObjectId(patient_id)})
 
