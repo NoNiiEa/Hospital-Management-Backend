@@ -5,6 +5,7 @@ from config.database import appointments as appointment_collection
 from config.database import patients as patients_collection
 from schema.billing_schemas import list_billing_schema
 from bson import ObjectId
+from starlette import status
 
 billing_router = APIRouter()
 
@@ -17,7 +18,16 @@ async def get_billing():
 
 @billing_router.post("/create")
 async def create_billings(billing: BillingModel):
-    response = billing_collection.insert_one(billing.model_dump())
+    json = billing.model_dump()
+    response = billing_collection.insert_one(json)
+
+    patient_id = json["patient_id"]
+    if not ObjectId.is_valid(patient_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Patient ID")
+    patient = patients_collection.find_one({"_id": ObjectId(patient_id)})
+    
+    if not patient:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Patient with id:{patient_id} not found.")
     return {"id": str(response.inserted_id)}
 
 @billing_router.delete("/delete/{billing_id}")
