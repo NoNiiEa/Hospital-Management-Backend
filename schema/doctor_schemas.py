@@ -1,6 +1,6 @@
 from bson import ObjectId
 
-def individual_patient_schema(doctor):
+def individual_doctor_schema(doctor):
     return {
         "id": str(doctor["_id"]),
         "name": doctor.get("name", "N/A"),
@@ -28,4 +28,4 @@ def individual_patient_schema(doctor):
     }
 
 def list_doctor_schema(doctors):
-    return [individual_patient_schema(doctor) for doctor in doctors]
+    return [individual_doctor_schema(doctor) for doctor in doctors]

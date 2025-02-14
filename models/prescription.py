@@ -1,15 +1,19 @@
 from pydantic import BaseModel, field_validator
-from typing import Literal
-from bson import ObjectId
+from typing import List
 from config.database import patients as patient_collection, doctors as doctor_collection
+from bson import ObjectId
 
-class AppointmentModel(BaseModel):
+class MedicationModel(BaseModel):
+    name: str
+    dosage: str
+    frequency: str
+    duration: str
+
+class PrescriptionModel(BaseModel):
     patient_id: str
     doctor_id: str
     date: str
-    time: str
-    status: Literal["Pending", "Confirmed", "Cancelled"]
-    remarks: str
+    medications: List[MedicationModel]
 
     @field_validator("patient_id", mode="before")
     @classmethod
@@ -36,6 +40,3 @@ class AppointmentModel(BaseModel):
             raise ValueError(f"Doctor with ID {doctor_id} not found in the database")
 
         return str(doctor_id)
-    
-class UpdateStatusRequest(BaseModel):
-    status: Literal["Pending", "Confirmed", "Cancelled"]

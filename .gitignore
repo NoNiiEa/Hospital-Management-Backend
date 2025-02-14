@@ -1,5 +1,6 @@
 # Ignore the virtual environment
 env/
+myenv/
 
 # Ignore compiled Python files
 __pycache__/
@@ -9,6 +10,8 @@ __pycache__/
 
 # Ignore environment variables (Sensitive data)
 .env
+
+
 
 # Ignore VS Code settings (if using VS Code)
 .vscode/
