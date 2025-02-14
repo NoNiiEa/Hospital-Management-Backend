@@ -11,7 +11,7 @@ async def get_prescriptions():
     prescriptions = prescription_collection.find()
     return list_schema(prescriptions)
 
-@prescription_router.post("/")
+@prescription_router.post("/create")
 async def create_prescriptions(prescription: PrescriptionModel):
     json = prescription.model_dump()
     response = prescription_collection.insert_one(json)
