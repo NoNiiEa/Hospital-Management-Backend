@@ -4,7 +4,7 @@ from typing import List
 class ContactModel(BaseModel):
     phone: str
     email: str
-    adresss: str
+    address: str
 
 class MedicalHistoryModel(BaseModel):
     disease: str

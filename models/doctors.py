@@ -28,16 +28,16 @@ class PatientModel(BaseModel):
         if not patient:
             raise ValueError(f"Patient with ID {patient_id} not found in the database")
 
-        return str(patient_id)  # Convert ObjectId to string for Pydantic
+        return str(patient_id) 
 
     @field_validator("diagnosis", "last_visit", mode="before")
     @classmethod
     def fetch_patient_info(cls, value, info):
         """Fetch diagnosis and last visit from the database based on patient_id."""
-        patient_id = info.data.get("patient_id")  # Pydantic v2 uses `info.data` instead of `values.get()`
+        patient_id = info.data.get("patient_id")
 
         if not patient_id:
-            return value  # If no patient_id, return the original value
+            return value 
 
         patient = patient_collection.find_one({"_id": ObjectId(patient_id)})
         if not patient:
