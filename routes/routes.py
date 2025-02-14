@@ -6,6 +6,7 @@ from .doctors import doctor_router
 from .appointment import appointment_router
 from .prescription import prescription_router
 from .billing import billing_router
+from .admission import admission_router
 from .staff import router as staff_router
 
 router = APIRouter()
@@ -16,5 +17,6 @@ router.include_router(appointment_router, prefix="/appointments", tags=["appoint
 router.include_router(prescription_router, prefix="/prescriptions", tags=["prescriptions"])
 router.include_router(billing_router, prefix="/billings", tags=["billings"])
 router.include_router(staff_router, prefix="/staffs", tags=["staffs"])
+router.include_router(admission_router, prefix="/admissions", tags=["admissions"])
 
 
