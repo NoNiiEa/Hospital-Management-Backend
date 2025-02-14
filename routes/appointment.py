@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from models.appointment import AppointmentModel
+from models.appointment import AppointmentModel, UpdateStatusRequest
 from config.database import appointments as appointment_collection, patients as patient_collection
 from schema.appointment import list_schema
 from bson import ObjectId
@@ -12,7 +12,7 @@ async def get_appointments():
     appointments = appointment_collection.find()
     return list_schema(appointments)
 
-@appointment_router.post("/")
+@appointment_router.post("/create")
 async def create_appointments(appointment: AppointmentModel):
     json = appointment.model_dump()
     response = appointment_collection.insert_one(json)
@@ -29,7 +29,7 @@ async def create_appointments(appointment: AppointmentModel):
         )
     return {"id": str(response.inserted_id)}
 
-@appointment_router.delete("/{appointment_id}")
+@appointment_router.delete("/delete/{appointment_id}")
 async def delete_appointment(appointment_id: str):
     try:
         appointment = appointment_collection.find_one({"_id": ObjectId(appointment_id)})
@@ -57,5 +57,28 @@ async def delete_appointment(appointment_id: str):
 
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    
+@appointment_router.patch("/{appointment_id}/status")
+async def update_appointment_status(appointment_id: str, status_update: UpdateStatusRequest):
+    new_status = status_update.status
+    
+    try:
+        appointment = appointment_collection.find_one({"_id": ObjectId(appointment_id)})
+        if not appointment:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Appointment not found")
+
+        result = appointment_collection.update_one(
+            {"_id": ObjectId(appointment_id)},
+            {"$set": {"status": new_status}}
+        )
+
+        if result.modified_count == 0:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to update appointment status")
+
+        return {"message": "Appointment status updated successfully", "status": new_status}
+
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
+    

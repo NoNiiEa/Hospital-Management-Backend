@@ -36,3 +36,6 @@ class AppointmentModel(BaseModel):
             raise ValueError(f"Doctor with ID {doctor_id} not found in the database")
 
         return str(doctor_id)
+    
+class UpdateStatusRequest(BaseModel):
+    status: Literal["Pending", "Confirmed", "Cancelled"]
