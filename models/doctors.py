@@ -54,5 +54,5 @@ class DoctorModel(BaseModel):
     name: str
     specialization: str
     contact: ContactModel
-    schedule: List[ScheduleModel]
-    patients: List[PatientModel]
+    schedule: List[ScheduleModel] = []
+    patients: List[PatientModel] = []
