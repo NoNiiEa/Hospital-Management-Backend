@@ -1,10 +1,11 @@
 from fastapi import APIRouter,HTTPException
 from models.admission import AdmissionModel
-from config.database import billing as admission_collection
-# from config.database import appointments as appointment_collection
+from config.database import admission as admission_collection
+# from config.database import appointments as appointment_cllection
 from config.database import patients as patients_collection
 from schema.admission_schemas import list_admission_schema
 from bson import ObjectId
+from starlette import status
 
 admission_router = APIRouter()
 
@@ -13,27 +14,21 @@ async def get_admission():
     admissions = admission_collection.find()
     return list_admission_schema(admissions)
 
+
+
 @admission_router.post("/create")
 async def create_admissions(admission: AdmissionModel):
-    # Extract patient_id from the admission model
-    patient_id = admission.patient_id
-
-    # Check if the patient_id format is valid
-    if not ObjectId.is_valid(patient_id):
-        raise HTTPException(status_code=400, detail="Invalid ObjectId format for patient_id")
-    
-    # Check if the patient exists in the patients collection
-    patient = patients_collection.find_one({"_id": ObjectId(patient_id)})
-    if not patient:
-        raise HTTPException(status_code=404, detail=f"Patient with ID {patient_id} not found in the database")
-    
-    # If patient exists, insert the admission record into the admissions collection
     json = admission.model_dump()
     response = admission_collection.insert_one(json)
 
+    patient_id = json["patient_id"]
+    if not ObjectId.is_valid(patient_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Patient ID")
+    patient = patients_collection.find_one({"_id": ObjectId(patient_id)})
+    
+    if not patient:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Patient with id:{patient_id} not found.")
     return {"id": str(response.inserted_id)}
-
-
 
 @admission_router.delete("/delete/{admission_id}")
 async def delete_admissions(admission_id: str):

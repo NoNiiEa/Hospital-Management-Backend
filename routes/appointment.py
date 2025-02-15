@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models.appointment import AppointmentModel, UpdateStatusRequest
-from config.database import appointments as appointment_collection, patients as patient_collection
+from config.database import appointments as appointment_collection, patients as patient_collection, doctors as doctor_collection
 from schema.appointment import list_schema
 from bson import ObjectId
 from starlette import status
@@ -18,8 +18,17 @@ async def create_appointments(appointment: AppointmentModel):
     response = appointment_collection.insert_one(json)
 
     patient_id = json["patient_id"]
-    patient = patient_collection.find_one({"_id": ObjectId(patient_id)})
+    doctor_id = json["doctor_id"]
 
+    if not ObjectId.is_valid(patient_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Patient ID")
+    if not ObjectId.is_valid(doctor_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Doctor ID")
+    if not doctor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Patient with id: {doctor_id} not found.")
+
+    patient = patient_collection.find_one({"_id": ObjectId(patient_id)})
+    doctor = doctor_collection.find_one({"_id": ObjectId(doctor_id)})
     if patient:
         old_appointments = patient["appointments"]
         old_appointments.append(str(response.inserted_id))
@@ -27,6 +36,8 @@ async def create_appointments(appointment: AppointmentModel):
             {'_id': ObjectId(patient_id)},
             {"$set": {'appointments': old_appointments}}
         )
+    else :
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Patient with id: {patient_id} not found.")
     return {"id": str(response.inserted_id)}
 
 @appointment_router.delete("/delete/{appointment_id}")
