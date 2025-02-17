@@ -19,3 +19,7 @@ class PatientModel(BaseModel):
     medical_history: List[MedicalHistoryModel]
     appointments: List[str] = []
     prescriptions: List[str] = []
+
+class GetPatientRequest(BaseModel):
+    page: int
+    limit: int
