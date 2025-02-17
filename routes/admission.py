@@ -32,6 +32,8 @@ async def create_admissions(admission: AdmissionModel):
 
 @admission_router.delete("/delete/{admission_id}")
 async def delete_admissions(admission_id: str):
+    if not ObjectId.is_valid(admission_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid admission id.")
     result = admission_collection.delete_one({"_id": ObjectId(admission_id)})
 
     if result.deleted_count == 0:
