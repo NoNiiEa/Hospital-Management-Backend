@@ -4,8 +4,6 @@ from bson import ObjectId
 from config.database import patients as patient_collection 
 from config.database import appointments as appointment_collection 
 
-
-
 class BillingModel(BaseModel):
     patient_id: str
     appointment_id: str
