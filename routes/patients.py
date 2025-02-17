@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from models.patients import PatientModel
+from models.patients import PatientModel, GetPatientRequest
 from config.database import patients as patients_collection, doctors as doctor_collection, appointments as appointment_collection, prescriptions as prescription_collection
 from schema.patients_schemas import list_patient_schema
 from bson import ObjectId
@@ -9,6 +9,14 @@ patient_router = APIRouter()
 @patient_router.get("/")
 async def get_patients():
     patients = patients_collection.find()
+    return list_patient_schema(patients)
+
+@patient_router.post("/limit")
+async def get_patientsLimit(request: GetPatientRequest):
+    limit = request.limit;
+    page = request.page
+    skip = (page - 1) * limit
+    patients = patients_collection.find().limit(limit).skip(skip).to_list(length=limit)
     return list_patient_schema(patients)
 
 @patient_router.post("/create/")
