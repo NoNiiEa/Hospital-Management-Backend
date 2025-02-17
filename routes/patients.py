@@ -6,8 +6,9 @@ from config.database import (
     appointments as appointment_collection, 
     prescriptions as prescription_collection
 )
-from schema.patients_schemas import list_patient_schema
+from schema.patients_schemas import list_patient_schema, individual_patient_schema
 from bson import ObjectId
+from starlette import status
 
 patient_router = APIRouter()
 
@@ -15,6 +16,18 @@ patient_router = APIRouter()
 async def get_patients():
     patients = patients_collection.find()
     return list_patient_schema(patients)
+
+@patient_router.get("/get/{patient_id}")
+async def get_patient_individal(patient_id: str):
+    if not ObjectId.is_valid(patient_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid patient id.")
+
+    patient =await patients_collection.find_one({"_id": ObjectId(patient_id)})
+    
+    if not patient:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found.")
+    
+    return individual_patient_schema(patient)
 
 @patient_router.post("/limit", status_code=status.HTTP_200_OK)
 async def get_patientsLimit(request: GetPatientRequest):
