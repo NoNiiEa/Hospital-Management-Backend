@@ -13,7 +13,7 @@ async def get_patients():
 
 @patient_router.post("/limit")
 async def get_patientsLimit(request: GetPatientRequest):
-    limit = request.limit;
+    limit = request.limit
     page = request.page
     skip = (page - 1) * limit
     patients = patients_collection.find().limit(limit).skip(skip).to_list(length=limit)
