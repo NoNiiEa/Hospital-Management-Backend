@@ -32,6 +32,8 @@ async def create_billings(billing: BillingModel):
 
 @billing_router.delete("/delete/{billing_id}")
 async def delete_billings(billing_id: str):
+    if not ObjectId.is_valid(billing_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid billing id.")
     result = billing_collection.delete_one({"_id": ObjectId(billing_id)})
 
     if result.deleted_count == 0:

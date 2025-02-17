@@ -19,6 +19,8 @@ async def create_staff(staff: StaffModel):
 
 @router.delete("/delete/{staff_id}")
 async def delete_staff(staff_id: str):
+    if not ObjectId.is_valid(staff_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid staff id.")
     result = staff_collection.delete_one({"_id": ObjectId(staff_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Staff with id: {staff_id} not found.")
