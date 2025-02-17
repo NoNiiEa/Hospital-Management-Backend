@@ -6,7 +6,7 @@ from config.database import (
     prescriptions as prescription_collection, 
     patients as patient_collection
 )
-from schema.doctor_schemas import list_doctor_schema
+from schema.doctor_schemas import list_doctor_schema, individual_doctor_schema
 from bson import ObjectId
 
 doctor_router = APIRouter()
@@ -16,6 +16,18 @@ async def get_doctors():
     doctors = doctors_collection.find()
     return list_doctor_schema(doctors)
 
+@doctor_router.get("/get/{doctor_id}")
+async def get_individual_doctor(doctor_id: str):
+    if not ObjectId.is_valid(doctor_id):
+        raise  HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid doctor id.")
+    
+    doctor =  doctors_collection.find_one({"_id": ObjectId(doctor_id)})
+    if not doctor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor id not found.")
+
+    return individual_doctor_schema(doctor)
+    
+    
 @doctor_router.post("/create", status_code=status.HTTP_201_CREATED)
 async def create_doctors(doctor: DoctorModel):
     response = doctors_collection.insert_one(doctor.model_dump())
