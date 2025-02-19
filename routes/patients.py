@@ -29,14 +29,12 @@ async def get_patient_individal(patient_id: str):
     
     return individual_patient_schema(patient)
 
-@patient_router.post("/limit", status_code=status.HTTP_200_OK)
-async def get_patientsLimit(request: GetPatientRequest):
-    limit = request.limit
-    page = request.page
+@patient_router.get("/limit/{page}/{limit}", status_code=status.HTTP_200_OK)
+async def get_patientsLimit(page: int, limit: int):
     skip = (page - 1) * limit
     
     patients_cursor = patients_collection.find().skip(skip).limit(limit)
-    patients = await patients_cursor.to_list(length=limit)
+    patients = patients_cursor.to_list(length=limit)
     
     return list_patient_schema(patients)
 
