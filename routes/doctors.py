@@ -26,6 +26,15 @@ async def get_individual_doctor(doctor_id: str):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Doctor id not found.")
 
     return individual_doctor_schema(doctor)
+
+@doctor_router.get("/limit/{page}/{limit}")
+async def get_doctor_limit(page: int, limit: int):
+    skip = (page - 1) * limit
+    
+    doctor_cursor = doctors_collection.find().skip(skip).limit(limit)
+    doctors = doctor_cursor.to_list(length=limit)
+    
+    return list_doctor_schema(doctors)
     
     
 @doctor_router.post("/create", status_code=status.HTTP_201_CREATED)
