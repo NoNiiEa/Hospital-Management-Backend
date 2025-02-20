@@ -66,9 +66,18 @@ async def add_patient(patient_id: str, doctor_id: str):
             detail="Patient already in the Doctor's patient list"
         )
 
+    diagnosis = patient.get("medical_history", [{}])[0].get("disease", "Unknown")
+    last_visit = patient.get("medical_history", [{}])[0].get("diagnosed_date", "Unknown")
+
+    new_patient_entry = {
+        "patient_id": patient_id,
+        "diagnosis": diagnosis,
+        "last_visit": last_visit
+    }
+
     update_result = doctors_collection.update_one(
         {"_id": ObjectId(doctor_id)},
-        {"$addToSet": {"patients": {"patient_id": patient_id}}}
+        {"$addToSet": {"patients": new_patient_entry}}
     )
 
     if update_result.modified_count == 0:
@@ -77,7 +86,11 @@ async def add_patient(patient_id: str, doctor_id: str):
             detail="Failed to add patient"
         )
     
-    return {"result": "success", "message": "Patient added to the doctor's list"}
+    return {
+        "result": "success", 
+        "message": "Patient added to the doctor's list",
+        "patient_details": new_patient_entry
+    }
 
 @doctor_router.delete("/{doctor_id}/remove_patient/{patient_id}", status_code=status.HTTP_200_OK)
 async def remove_patient_from_doctor(doctor_id: str, patient_id: str):
