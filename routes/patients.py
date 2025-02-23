@@ -53,7 +53,7 @@ async def add_medical_history(patient_id: str, medical_history: MedicalHistoryMo
     if not patient:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found.")
 
-    medical_history_dict = medical_history.dict()  # Convert Pydantic model to dictionary
+    medical_history_dict = medical_history.model_dump()
 
     result = patients_collection.update_one(
         {"_id": ObjectId(patient_id)},
