@@ -5,7 +5,8 @@ def individual_schema(appointment):
         "doctor_id": str(appointment.get("doctor_id", "N/A")),
         "date": appointment.get("date", "N/A"),
         "time": appointment.get("time", "N/A"),
-        "status": appointment.get("status", "N/A")
+        "status": appointment.get("status", "N/A"),
+        "remarks": appointment.get("remarkds", "N/A")
     }
 
 def list_schema(appointments):
