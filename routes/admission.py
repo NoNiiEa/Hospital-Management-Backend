@@ -1,7 +1,6 @@
 from fastapi import APIRouter,HTTPException
 from models.admission import AdmissionModel
 from config.database import admission as admission_collection
-# from config.database import appointments as appointment_cllection
 from config.database import patients as patients_collection
 from schema.admission_schemas import list_admission_schema
 from bson import ObjectId

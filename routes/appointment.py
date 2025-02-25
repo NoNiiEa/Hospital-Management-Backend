@@ -24,11 +24,11 @@ async def create_appointments(appointment: AppointmentModel):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Patient ID")
     if not ObjectId.is_valid(doctor_id):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid Doctor ID")
-    if not doctor:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Patient with id: {doctor_id} not found.")
 
     patient = patient_collection.find_one({"_id": ObjectId(patient_id)})
     doctor = doctor_collection.find_one({"_id": ObjectId(doctor_id)})
+    if not doctor:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Patient with id: {doctor_id} not found.")
     if patient:
         old_appointments = patient["appointments"]
         old_appointments.append(str(response.inserted_id))

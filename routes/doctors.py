@@ -32,7 +32,7 @@ async def get_doctor_limit(page: int, limit: int):
     skip = (page - 1) * limit
     
     doctor_cursor = doctors_collection.find().skip(skip).limit(limit)
-    doctors = doctor_cursor.to_list(length=limit)
+    doctors = list(doctor_cursor)
     
     return list_doctor_schema(doctors)
     

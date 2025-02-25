@@ -11,8 +11,6 @@ __pycache__/
 # Ignore environment variables (Sensitive data)
 .env
 
-
-
 # Ignore VS Code settings (if using VS Code)
 .vscode/
 
