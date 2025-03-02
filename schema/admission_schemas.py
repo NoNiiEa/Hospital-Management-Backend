@@ -3,7 +3,7 @@ from bson import ObjectId
 def individual_admission_schema(admission):
     return {
         "id": str(admission["_id"]),
-        "patient": admission.get("patient_id","N/A"),
+        "patient_id": admission.get("patient_id","N/A"),
         "admission_date": admission.get("admission_date","N/A"),
         "expected_discharge_date": admission.get("expected_discharge_date", "N/A"),
         "actual_discharge_date": admission.get("actual_discharge_date", "N/A"),

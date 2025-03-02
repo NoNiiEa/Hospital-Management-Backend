@@ -13,7 +13,14 @@ async def get_admission():
     admissions = admission_collection.find()
     return list_admission_schema(admissions)
 
-
+@admission_router.get("/get/{patient_id}")
+async def get_individual_admission(patient_id: str):
+    if not ObjectId.is_valid(patient_id):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid admission id.")
+    admissions = admission_collection.find({"patient_id": patient_id})
+    if not admissions:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Admission id not found.")
+    return list_admission_schema(admissions)
 
 @admission_router.post("/create")
 async def create_admissions(admission: AdmissionModel):
