@@ -2,6 +2,7 @@ from pydantic import BaseModel, field_validator
 from typing import List, Optional
 from bson import ObjectId
 from config.database import patients as patient_collection
+from models.billing import BillingModel
 
 class TreatmentModel(BaseModel):
     procedure: str
@@ -20,14 +21,6 @@ class InsuranceModel(BaseModel):
     coverage: str
     amount_covered: int
     amount_due: int
-
-class BillingModel(BaseModel):
-    admission_fee: int
-    treatment_cost: int
-    medication_cost: int
-    total_cost: int
-    payment_status: str
-    insurance: Optional[InsuranceModel] = None
 
 class AdmissionModel(BaseModel):
     patient_id: str
