@@ -1,5 +1,6 @@
 def individual_schema(staff):
     return {
+        "id": str(staff["_id"]),
         "name": staff.get("name", "N/A"),
         "role": staff.get("role", "N/A"),
         "contact": {
